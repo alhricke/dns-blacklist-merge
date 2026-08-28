@@ -2,7 +2,7 @@ name: Merge DNS Blacklist
 run-name: Auto merge blacklists
 on:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 */8 * * *'
   # 支持手动在网页触发运行
   workflow_dispatch:
 
