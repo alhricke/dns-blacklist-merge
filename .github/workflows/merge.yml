@@ -1,31 +1,30 @@
-name: Merge DNS Blacklist
-run-name: Auto merge blacklists
+name: DNS黑名单合并
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 on:
   schedule:
-    - cron: '0 */8 * * *'
-  # 支持手动在网页触发运行
-  workflow_dispatch:
+    - cron: '23 */8 * * *'  # UTC每8小时23分，避开整点拥堵
+  workflow_dispatch: # 手动触发调试
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      TZ: Asia/Shanghai
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Set timezone Asia/Shanghai
+        uses: szenius/set-timezone@v2
         with:
-          fetch-depth: 0
-
-      - name: Run merge script
+          timezoneLinux: "Asia/Shanghai"
+      - name: install python
+        run: pip install requests
+      - name: run merge script
+        run: python merge.py
+      - name: commit files
         run: |
-          chmod +x merge.py
-          python3 merge.py
-
-      - name: Commit & Push changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git diff --quiet && git diff --staged --quiet || git commit -m "自动获取dns列表去重整合 $(date +'%Y-%m-%d %H:%M')"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add merged_blacklist.txt
+          git commit -m "自动获取dns列表去重整合 $(date +'%Y-%m-%d %H:%M:%S')" || true
           git push
