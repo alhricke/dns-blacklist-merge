@@ -1,2 +1,2 @@
-https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblockdns.txt
+https://github.com/217heidai/adblockfilters/releases/download/rule/adblockdns.txt
 https://anti-ad.net/easylist.txt
